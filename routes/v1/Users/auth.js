@@ -85,6 +85,9 @@ router.post("/login", async (req, res) => {
   // const token = jwt.sign({_id: user._id}, process.env.SECRET)
   const { accessToken, refreshToken } = await generateTokens(user);
 
+  const result = await Shop.find({ owner_id: user._id });
+
+
   res.header("auth-token", accessToken).json({
     email,
     // token,
@@ -95,6 +98,7 @@ router.post("/login", async (req, res) => {
     id: user._id,
     usertype: user.usertype,
     name: user.name,
+    shop_name: result[0].shop_name
   });
 });
 

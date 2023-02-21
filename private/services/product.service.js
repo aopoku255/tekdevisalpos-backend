@@ -1,15 +1,16 @@
 const Product = require("../schemas/Product");
+const { uploadFile } = require("./Firebase/imageUpload.service");
 
 async function addProduct({ req }) {
   try {
-    // const image_url = await uploadFile(
-    //   req.file,
-    //   `product/${req.body.product_id}`
-    // );
+    const image_url = await uploadFile(
+      req.file,
+      `product/${req.body.store_id}`
+    );
 
     const result = await Product.create({
       ...req.body,
-      image: "image_url",
+      image: image_url,
     });
 
     if (result) {
@@ -36,7 +37,7 @@ async function updateProduct({ req }) {
       },
       {
         ...req.body,
-        image: "image_url",
+        image: image_url,
       }
     );
 

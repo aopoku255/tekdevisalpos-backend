@@ -51,7 +51,7 @@ const invoiceSchema = new mongoose.Schema(
           required: false,
           default: 0.0,
         },
-        prize: {
+        selling_price: {
           type: Number,
           required: false,
         },

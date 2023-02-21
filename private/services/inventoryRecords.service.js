@@ -25,6 +25,15 @@ async function editInventory({ req }) {
   }
 }
 
+async function fetchInventoryRecords({ req }) {
+  const { product_id } = req.body;
+  try {
+    const results = await InventoryRecords.find({ product_id });
+
+    return { message: "success", data: results };
+  } catch (error) {}
+}
+
 // async function deleteProduct({ req }) {
 //   try {
 //     result = await Product.findByIdAndRemove(
@@ -43,4 +52,4 @@ async function editInventory({ req }) {
 //   }
 // }
 
-module.exports = { editInventory };
+module.exports = { editInventory, fetchInventoryRecords };

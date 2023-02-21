@@ -6,17 +6,23 @@ async function fetchDaySales({ req }) {
     const results = await Invoice.find({ shop_id });
     const sales = {};
     let total = 0;
+    let previousWeekDay = null; // keep track of the previous week day
     results.forEach(({ grand_total, createdAt, invoice_number }) => {
-      const dayofweek = new Date(createdAt).toLocaleDateString("en-US", {
+      const dayOfWeek = new Date(createdAt).toLocaleDateString("en-US", {
         weekday: "short",
       });
       const revenue = grand_total;
-      if (!sales[createdAt]) {
-        total = sales[dayofweek] ? (total += revenue) : revenue;
-        sales[dayofweek] = { name: dayofweek, sale: total };
+      if (!sales[dayOfWeek]) {
+        if (previousWeekDay && dayOfWeek !== previousWeekDay) {
+          // if it's a new week day, set the total to zero
+          total = 0;
+        }
+        previousWeekDay = dayOfWeek; // update the previous week day
+        total = sales[dayOfWeek] ? (total += revenue) : revenue;
+        sales[dayOfWeek] = { name: dayOfWeek, sale: total };
       } else {
         total += revenue;
-        sales[dayofweek].sale = total;
+        sales[dayOfWeek].sale = total;
       }
     });
     const salevalue = Object.values(sales);
@@ -75,8 +81,10 @@ async function monthSales({ req }) {
 
     const salesvalue = Object.values(sales);
     const monthSales = salesvalue[salesvalue.length - 1];
-
-    return { message: "success", data: monthSales };
+    // const newValue = salesvalue[salesvalue.length - 1];
+    // const subValue = salesvalue[salesvalue.length - 2];
+    // const value = Number((((newValue.sale - subValue.sale) / newValue.sale) * 100).toFixed(2));
+    return { message: "success", data: monthSales};
   } catch (error) {
     return { data: error };
   }
@@ -122,7 +130,7 @@ async function salesToday({ req }) {
     const salevalue = Object.values(sales);
     const newValue = salevalue[salevalue.length - 1];
     const subValue = salevalue[salevalue.length - 2];
-    const value = (subValue.sale - newValue.sale) / newValue.sale * 100
+    const value = Number((((newValue.sale - subValue.sale) / newValue.sale) * 100).toFixed(2));
     return { message: "success", data: newValue, value };
   } catch (error) {
     return { data: error };
